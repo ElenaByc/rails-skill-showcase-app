@@ -55,5 +55,5 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
   # Use the Rails ERD gem to visualize the application's data model
-  gem 'rails-erd'
+  gem "rails-erd"
 end
