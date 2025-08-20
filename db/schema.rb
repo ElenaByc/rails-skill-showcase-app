@@ -10,7 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_20_040452) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_20_070211) do
+  create_table "certificate_skills", force: :cascade do |t|
+    t.integer "certificate_id", null: false
+    t.integer "skill_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["certificate_id", "skill_id"], name: "index_certificate_skills_on_certificate_id_and_skill_id", unique: true
+    t.index ["certificate_id"], name: "index_certificate_skills_on_certificate_id"
+    t.index ["skill_id"], name: "index_certificate_skills_on_skill_id"
+  end
+
+  create_table "certificates", force: :cascade do |t|
+    t.string "name"
+    t.date "issued_on"
+    t.string "verification_url"
+    t.integer "user_id", null: false
+    t.integer "issuer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["issuer_id"], name: "index_certificates_on_issuer_id"
+    t.index ["user_id"], name: "index_certificates_on_user_id"
+  end
+
   create_table "issuers", force: :cascade do |t|
     t.string "name"
     t.string "website_url"
@@ -35,4 +57,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_040452) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
+
+  add_foreign_key "certificate_skills", "certificates"
+  add_foreign_key "certificate_skills", "skills"
+  add_foreign_key "certificates", "issuers"
+  add_foreign_key "certificates", "users"
 end
