@@ -16,5 +16,4 @@ class User < ApplicationRecord
   def certificates_by_skill(skill_name)
     certificates.joins(:skills).where(skills: { name: skill_name }).distinct
   end
-
 end
