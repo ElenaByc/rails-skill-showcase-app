@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_20_070211) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_29_000632) do
   create_table "certificate_skills", force: :cascade do |t|
     t.integer "certificate_id", null: false
     t.integer "skill_id", null: false
@@ -40,6 +40,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_070211) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "created_by", null: false
+    t.index ["created_by"], name: "index_issuers_on_created_by"
   end
 
   create_table "skills", force: :cascade do |t|
@@ -47,6 +49,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_070211) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "created_by", null: false
+    t.index ["created_by"], name: "index_skills_on_created_by"
   end
 
   create_table "users", force: :cascade do |t|
@@ -62,4 +66,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_20_070211) do
   add_foreign_key "certificate_skills", "skills"
   add_foreign_key "certificates", "issuers"
   add_foreign_key "certificates", "users"
+  add_foreign_key "issuers", "users", column: "created_by"
+  add_foreign_key "skills", "users", column: "created_by"
 end

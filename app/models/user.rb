@@ -4,6 +4,9 @@ class User < ApplicationRecord
   has_many :certificates
   has_many :skills, through: :certificates
 
+  has_many :created_skills, class_name: "Skill", foreign_key: "created_by"
+  has_many :created_issuers, class_name: "Issuer", foreign_key: "created_by"
+
   validates :name, presence: true
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :password, length: { minimum: 6 }, if: -> { password.present? }
