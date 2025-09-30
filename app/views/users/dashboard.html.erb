@@ -1,1 +1,22 @@
 <h1><%= @user.name %>'s Dashboard</h1>
+<h2>Certificates</h2>
+<ul>
+  <% @certificates.each do |certificate| %>
+    <li>
+      <strong><%= certificate.name %></strong>
+      (<%= certificate.issued_on %>)
+      from <%= certificate.issuer.name %><br>
+
+      <em>Skills:</em>
+      <%= certificate.skills.map(&:name).join(", ") %><br>
+
+      <%= link_to "Edit", edit_certificate_path(certificate) %> |
+      <%= link_to "Delete", certificate_path(certificate), method: :delete, data: { confirm: "Are you sure?" } %>
+    </li>
+  <% end %>
+</ul>
+<p><%= link_to "Add New Certificate", new_certificate_path %></p>
+<br>
+<p><%= link_to "Manage Skills", user_skills_path(@user) %></p>
+<br
+<p><%= link_to "Manage Issuers", user_issuers_path(@user) %></p>

@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   has_many :certificates
   has_many :skills, through: :certificates
+  has_many :issuers, through: :certificates
 
   has_many :created_skills, class_name: "Skill", foreign_key: "created_by"
   has_many :created_issuers, class_name: "Issuer", foreign_key: "created_by"
@@ -14,6 +15,11 @@ class User < ApplicationRecord
   # Returns all unique skills associated with the user's certificates
   def unique_skills
     skills.distinct
+  end
+
+  # Returns all unique issuers associated with the user's certificates
+  def unique_issuers
+    issuers.distinct
   end
 
   # Returns certificates that include a specific skill

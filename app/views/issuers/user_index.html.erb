@@ -1,0 +1,21 @@
+<h1>Manage Issuers</h1>
+
+<ul>
+  <% @issuers.each do |issuer| %>
+    <li>
+      <%= issuer.name %> —
+      <%= pluralize(issuer.certificates.where(user_id: @user.id).count, "certificate") %><br>
+
+      <%= link_to "Edit", edit_issuer_path(issuer) %> |
+
+      <% if issuer.certificates.where(user_id: @user.id).any? %>
+        <span>Delete (disabled)</span>
+      <% else %>
+        <%= link_to "Delete", issuer_path(issuer), method: :delete, data: { confirm: "Are you sure?" } %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
+
+<p><%= link_to "Create New Issuer", new_issuer_path %></p>
+<p><%= link_to "Return to Dashboard", user_dashboard_path(@user) %></p>

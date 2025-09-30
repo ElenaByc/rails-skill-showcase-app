@@ -5,4 +5,6 @@ class Issuer < ApplicationRecord
   validates :description, length: { maximum: 1000 }, allow_blank: true
 
   belongs_to :creator, class_name: "User", foreign_key: "created_by"
+
+  has_many :certificates
 end
