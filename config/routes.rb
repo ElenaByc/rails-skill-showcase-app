@@ -9,6 +9,16 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  # User dashboard route (place where user can manage their certificates, skills, and issuers)
+  get "/users/:id/dashboard", to: "users#dashboard", as: :user_dashboard
+  get "/users/:id/showcase", to: "users#showcase", as: :user_showcase
+  get "/users/:id/skills", to: "skills#user_index", as: :user_skills
+  get "/users/:id/issuers", to: "issuers#user_index", as: :user_issuers
+
+  resources :certificates
+  resources :skills
+  resources :issuers
+
   # Defines the root path route ("/")
   # root "posts#index"
 end

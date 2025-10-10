@@ -1,0 +1,24 @@
+<h1><%= @user.name %>'s Skill Showcase</h1>
+
+<h2>Certificates</h2>
+
+<p style="max-width: 600px;">
+  In the future, this page will include a clickable skill cloud. Recruiters will be able to filter certificates and projects by specific skills — for example, clicking “React” will instantly show all certificates and projects where React was used. This will make it easier to explore a user's strengths and learning journey.
+</p>
+
+<div style="margin-bottom: 1em;">
+  <% @skills.each do |skill| %>
+    <span style="margin-left: 10px;"><%= skill.name %></span>
+  <% end %>
+</div>
+
+
+<ul>
+  <% @certificates.each do |certificate| %>
+    <li>
+      <strong><%= certificate.name %></strong>
+      (<%= certificate.issued_on %>) from <%= certificate.issuer.name %><br>
+      <em>Skills:</em> <%= certificate.skills.map(&:name).join(", ") %>
+    </li>
+  <% end %>
+</ul>

@@ -4,4 +4,6 @@ class Skill < ApplicationRecord
 
   has_many :certificate_skills
   has_many :certificates, through: :certificate_skills
+
+  belongs_to :creator, class_name: "User", foreign_key: "created_by"
 end
