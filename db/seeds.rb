@@ -24,7 +24,7 @@ user1 = User.create!(
 )
 
 user2 = User.create!(
-  name: "Jane Smith", 
+  name: "Jane Smith",
   email: "jane@example.com",
   password: "password123"
 )
@@ -90,7 +90,7 @@ issuer2 = Issuer.create!(
 issuer3 = Issuer.create!(
   name: "Coursera",
   website_url: "https://coursera.org",
-  logo_url: "https://coursera.org/logo.png", 
+  logo_url: "https://coursera.org/logo.png",
   description: "Online learning platform with courses from top universities",
   created_by: user2.id
 )
@@ -139,10 +139,10 @@ cert4 = Certificate.create!(
 )
 
 # Associate skills with certificates - ONLY USE SKILLS CREATED BY THE SAME USER
-cert1.skills << [skill1, skill3]  # user1's certificate uses user1's skills (Rails + SQL)
-cert2.skills << [skill2, skill3]  # user1's certificate uses user1's skills (JS + SQL)
-cert3.skills << [skill4, skill6]  # user2's certificate uses user2's skills (React + MongoDB)
-cert4.skills << [skill4, skill5, skill6]  # user2's certificate uses user2's skills (React + Node + MongoDB)
+cert1.skills << [ skill1, skill3 ]  # user1's certificate uses user1's skills (Rails + SQL)
+cert2.skills << [ skill2, skill3 ]  # user1's certificate uses user1's skills (JS + SQL)
+cert3.skills << [ skill4, skill6 ]  # user2's certificate uses user2's skills (React + MongoDB)
+cert4.skills << [ skill4, skill5, skill6 ]  # user2's certificate uses user2's skills (React + Node + MongoDB)
 
 puts "Sample data created successfully!"
 puts "Users: #{User.count}"
