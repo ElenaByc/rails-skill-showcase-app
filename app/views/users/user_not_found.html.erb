@@ -1,0 +1,10 @@
+<h1>User Not Found</h1>
+
+<div class="error-message">
+  <p>The user with ID <strong><%= @user_id %></strong> doesn't exist.</p>
+  <p>Please check the URL or try a different user ID.</p>
+</div>
+
+<div class="actions">
+  <%= link_to "Go Home", root_path, class: "btn btn-primary" %>
+</div>
