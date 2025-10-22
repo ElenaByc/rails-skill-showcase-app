@@ -1,21 +1,23 @@
 <h1>Manage Skills</h1>
-
+<br>
 <ul>
   <% @skills.each do |skill| %>
     <li>
-      <%= skill.name %> —
-      <%= pluralize(skill.certificates.where(user_id: @user.id).count, "certificate") %><br>
+      <h4><%= skill.name %> — <%= pluralize(skill.certificates.where(user_id: @user.id).count, "certificate") %></h4>
 
-      <%= link_to "Edit", edit_skill_path(skill) %> |
+      <%= link_to "Details", skill_path(skill) %> |
+      <%= link_to "Edit", edit_skill_for_user_path(@user, skill) %> |
 
       <% if skill.certificates.where(user_id: @user.id).any? %>
         <span>Delete (disabled)</span>
       <% else %>
-        <%= link_to "Delete", skill_path(skill), method: :delete, data: { confirm: "Are you sure?" } %>
+        <%= link_to "Delete", delete_skill_for_user_path(@user, skill), data: { turbo_method: :delete, turbo_confirm: "You are about to delete '#{skill.name}' skill, are you sure?" } %>
       <% end %>
     </li>
   <% end %>
 </ul>
 
-<p><%= link_to "Create New Skill", new_skill_path %></p>
+<br><br><hr><br>
+
+<p><%= link_to "Create New Skill", new_skill_for_user_path(@user) %></p>
 <p><%= link_to "Return to Dashboard", user_dashboard_path(@user) %></p>

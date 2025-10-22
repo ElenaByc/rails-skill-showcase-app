@@ -1,0 +1,35 @@
+<h1>Edit Skill</h1>
+
+<%= form_with model: @skill, url: user_skill_path(@skill.created_by, @skill), method: :patch, local: true do |form| %>
+  <% if @skill.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(@skill.errors.count, "error") %> prohibited this skill from being saved:</h2>
+      <ul>
+        <% @skill.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.label :description %>
+    <%= form.text_area :description, rows: 4 %>
+  </div>
+
+  <div>
+    <%= form.submit "Update Skill" %>
+  </div>
+<% end %>
+
+<br><br><hr><br>
+
+<p>
+  <%= link_to "View Skill", skill_path(@skill) %> |
+  <%= link_to "Back to Skills", user_skills_path(@skill.created_by) %>
+</p>

@@ -1,0 +1,29 @@
+<h1><%= @skill.name %></h1>
+
+<% if @skill.description.present? %>
+  <p><strong>Description:</strong> <%= @skill.description %></p>
+<% end %>
+
+<h2>Certificates using this skill</h2>
+
+<% if @certificates.any? %>
+  <ul>
+    <% @certificates.each do |certificate| %>
+      <li>
+        <h4><%= certificate.name %></h4>
+        <p>
+          <strong>Issued by:</strong> <%= certificate.issuer.name %><br>
+          <strong>Issued on:</strong> <%= certificate.issued_on %><br>
+        </p>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No certificates are using this skill yet.</p>
+<% end %>
+
+<br><br><hr><br>
+
+<p>
+  <%= link_to "Back to Skills", user_skills_path(@skill.created_by) %>
+</p>

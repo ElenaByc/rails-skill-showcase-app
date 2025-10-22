@@ -11,8 +11,15 @@ Rails.application.routes.draw do
 
   # User dashboard route (place where user can manage their certificates, skills, and issuers)
   get "/users/:id/dashboard", to: "users#dashboard", as: :user_dashboard
+
   get "/users/:id/showcase", to: "users#showcase", as: :user_showcase
   get "/users/:id/skills", to: "skills#user_index", as: :user_skills
+  get "/users/:id/skills/new", to: "skills#new", as: :new_skill_for_user
+  post "/users/:id/skills", to: "skills#create"
+  get "/users/:user_id/skills/:id/edit", to: "skills#edit", as: :edit_skill_for_user
+  patch "/users/:user_id/skills/:id", to: "skills#update", as: :user_skill
+  put "/users/:user_id/skills/:id", to: "skills#update"
+  delete "/users/:user_id/skills/:id", to: "skills#destroy", as: :delete_skill_for_user
   get "/users/:id/issuers", to: "issuers#user_index", as: :user_issuers
 
   resources :certificates
