@@ -21,6 +21,12 @@ Rails.application.routes.draw do
   put "/users/:user_id/skills/:id", to: "skills#update"
   delete "/users/:user_id/skills/:id", to: "skills#destroy", as: :delete_skill_for_user
   get "/users/:id/issuers", to: "issuers#user_index", as: :user_issuers
+  get "/users/:id/issuers/new", to: "issuers#new", as: :new_issuer_for_user
+  post "/users/:id/issuers", to: "issuers#create"
+  get "/users/:user_id/issuers/:id/edit", to: "issuers#edit", as: :edit_issuer_for_user
+  patch "/users/:user_id/issuers/:id", to: "issuers#update", as: :user_issuer
+  put "/users/:user_id/issuers/:id", to: "issuers#update"
+  delete "/users/:user_id/issuers/:id", to: "issuers#destroy", as: :delete_issuer_for_user
 
   resources :certificates
   resources :skills

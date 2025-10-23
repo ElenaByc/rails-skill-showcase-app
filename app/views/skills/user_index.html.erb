@@ -13,7 +13,9 @@
         <% if skill.certificates.where(user_id: @user.id).any? %>
           <button class="btn btn-secondary btn-sm disabled">Delete</button>
         <% else %>
-          <%= link_to "Delete", delete_skill_for_user_path(@user, skill), class: "btn btn-outline-danger btn-sm", data: { turbo_method: :delete, turbo_confirm: "You are about to delete '#{skill.name}' skill, are you sure?" } %>
+          <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteSkillModal<%= skill.id %>">
+            Delete
+          </button>
         <% end %>
       </div>
     </div>
@@ -23,3 +25,27 @@
 <br>
 
 <p class="text-center"><%= link_to "Create New Skill", new_skill_for_user_path(@user), class: "btn btn-primary" %></p>
+
+<!-- Delete Confirmation Modals -->
+<% @skills.each do |skill| %>
+  <% unless skill.certificates.where(user_id: @user.id).any? %>
+    <div class="modal fade" id="deleteSkillModal<%= skill.id %>" tabindex="-1" aria-labelledby="deleteSkillModalLabel<%= skill.id %>" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteSkillModalLabel<%= skill.id %>">Confirm Delete</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>You are about to delete the skill <strong>"<%= skill.name %>"</strong>.</p>
+            <p class="text-danger">This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <%= link_to "Delete Skill", delete_skill_for_user_path(@user, skill), class: "btn btn-outline-danger", data: { turbo_method: :delete } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

@@ -1,0 +1,45 @@
+<h1 class="text-primary mb-4"><%= @issuer.name %></h1>
+
+<% if @issuer.description.present? %>
+  <p><strong>Description:</strong> <%= @issuer.description %></p>
+<% end %>
+
+<% if @issuer.website_url.present? %>
+  <p><strong>Website:</strong> <%= link_to @issuer.website_url, @issuer.website_url, target: "_blank" %></p>
+<% end %>
+
+<% if @issuer.logo_url.present? %>
+  <p><strong>Logo:</strong> <%= link_to @issuer.logo_url, @issuer.logo_url, target: "_blank" %></p>
+<% end %>
+
+<h2>Certificates issued by this issuer</h2>
+
+<% if @certificates.any? %>
+  <ul>
+    <% @certificates.each do |certificate| %>
+      <li>
+        <h4><%= certificate.name %></h4>
+        <p>
+          <strong>Issued to:</strong> <%= certificate.user.name %><br>
+          <strong>Issued on:</strong> <%= certificate.issued_on %><br>
+          <% if certificate.skills.any? %>
+            <strong>Skills:</strong> <%= certificate.skills.pluck(:name).join(", ") %><br>
+          <% end %>
+          <% if certificate.verification_url.present? %>
+            <strong>Verification:</strong> <%= link_to certificate.verification_url, certificate.verification_url, target: "_blank" %>
+          <% end %>
+        </p>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No certificates have been issued by this issuer yet.</p>
+<% end %>
+
+<br><br><hr><br>
+
+<p>
+  <%= link_to "Edit Issuer", edit_issuer_for_user_path(@user, @issuer) %> |
+  <%= link_to "Delete Issuer", delete_issuer_for_user_path(@user, @issuer), method: :delete, data: { confirm: "Are you sure?" } %> |
+  <%= link_to "Back to Issuers", user_issuers_path(@user) %>
+</p>
