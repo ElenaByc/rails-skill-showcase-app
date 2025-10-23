@@ -26,7 +26,7 @@
             <strong>Skills:</strong> <%= certificate.skills.pluck(:name).join(", ") %><br>
           <% end %>
           <% if certificate.verification_url.present? %>
-            <strong>Verification:</strong> <%= link_to certificate.verification_url, certificate.verification_url, target: "_blank", rel: "noopener noreferrer" %>
+            <strong>Verification:</strong> <%= link_to "View Certificate", certificate.verification_url, target: "_blank", rel: "noopener noreferrer" %>
           <% end %>
         </p>
       </li>
