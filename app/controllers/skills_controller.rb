@@ -7,6 +7,7 @@ class SkillsController < ApplicationController
   end
 
   def show
+    @user = User.find(@skill.created_by)
     @certificates = @skill.certificates.includes(:user, :issuer)
   end
 
@@ -47,7 +48,7 @@ class SkillsController < ApplicationController
     @user = User.find_by(id: params[:id])
     unless @user
       @user_id = params[:id]
-      render :user_not_found, status: :not_found
+      render "users/user_not_found", status: :not_found
       return
     end
     @skills = Skill.where(created_by: @user.id).includes(:certificates)

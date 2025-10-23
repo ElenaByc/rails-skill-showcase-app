@@ -1,10 +1,10 @@
-<h1><%= @skill.name %></h1>
+<h1 class="text-primary mb-4"><%= @skill.name %></h1>
 
 <% if @skill.description.present? %>
   <p><strong>Description:</strong> <%= @skill.description %></p>
 <% end %>
 
-<h2>Certificates using this skill</h2>
+<h3 class="text-primary mb-3">Certificates using this skill</h3>
 
 <% if @certificates.any? %>
   <ul>
@@ -22,8 +22,3 @@
   <p>No certificates are using this skill yet.</p>
 <% end %>
 
-<br><br><hr><br>
-
-<p>
-  <%= link_to "Back to Skills", user_skills_path(@skill.created_by) %>
-</p>
