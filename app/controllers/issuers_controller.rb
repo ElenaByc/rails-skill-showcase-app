@@ -1,6 +1,6 @@
 class IssuersController < ApplicationController
-  before_action :set_issuer, only: [:show, :edit, :update, :destroy]
-  before_action :check_ownership, only: [:edit, :update, :destroy]
+  before_action :set_issuer, only: [ :show, :edit, :update, :destroy ]
+  before_action :check_ownership, only: [ :edit, :update, :destroy ]
 
   def index
     @issuers = Issuer.all.includes(:creator)
@@ -21,7 +21,7 @@ class IssuersController < ApplicationController
     @issuer.created_by = params[:id] # Get user ID from the route parameter
 
     if @issuer.save
-      redirect_to user_issuers_path(params[:id]), notice: 'Issuer was successfully created.'
+      redirect_to user_issuers_path(params[:id]), notice: "Issuer was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
@@ -32,7 +32,7 @@ class IssuersController < ApplicationController
 
   def update
     if @issuer.update(issuer_params)
-      redirect_to user_issuers_path(@issuer.created_by), notice: 'Issuer was successfully updated.'
+      redirect_to user_issuers_path(@issuer.created_by), notice: "Issuer was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -41,15 +41,14 @@ class IssuersController < ApplicationController
   def destroy
     user_id = @issuer.created_by
     @issuer.destroy
-    redirect_to user_issuers_path(user_id), notice: 'Issuer was successfully deleted.'
+    redirect_to user_issuers_path(user_id), notice: "Issuer was successfully deleted."
   end
 
   def user_index
     @user = User.find_by(id: params[:id])
     unless @user
       @user_id = params[:id]
-      render 'users/user_not_found', status: :not_found
-      return
+      render "users/user_not_found", status: :not_found
     end
     @issuers = Issuer.where(created_by: @user.id).includes(:certificates)
   end
@@ -61,15 +60,13 @@ class IssuersController < ApplicationController
     unless @issuer
       @issuer_id = params[:id]
       render :issuer_not_found, status: :not_found
-      return
     end
   end
 
   def check_ownership
     current_user_id = params[:user_id] # TODO: Replace with current_user.id when authentication is added
     unless current_user_id && @issuer.created_by.to_s == current_user_id.to_s
-      redirect_to user_issuers_path(@issuer.created_by), alert: 'You can only edit issuers you created.'
-      return
+      redirect_to user_issuers_path(@issuer.created_by), alert: "You can only edit issuers you created."
     end
   end
 
