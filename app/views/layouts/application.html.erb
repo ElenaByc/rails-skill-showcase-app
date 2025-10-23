@@ -39,7 +39,7 @@
             <% if @user %>
               <% user_id = @user.id %>
             <% elsif params[:id] || params[:user_id] %>
-              <% user_id = params[:id] || params[:user_id] %>
+              <% user_id = params[:user_id] || params[:id] %>
             <% end %>
             <% if user_id %>
               <li class="nav-item">
