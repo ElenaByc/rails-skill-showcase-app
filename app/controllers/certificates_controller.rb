@@ -1,6 +1,6 @@
 class CertificatesController < ApplicationController
-  before_action :set_certificate, only: [:show, :edit, :update, :destroy]
-  before_action :check_ownership, only: [:edit, :update, :destroy]
+  before_action :set_certificate, only: [ :show, :edit, :update, :destroy ]
+  before_action :check_ownership, only: [ :edit, :update, :destroy ]
 
   def index
     @certificates = Certificate.includes(:user, :issuer, :skills)
