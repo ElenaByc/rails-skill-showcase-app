@@ -1,0 +1,59 @@
+<style>
+  .certificate-image {
+    width: 300px;
+    height: 210px;
+  }
+  @media (min-width: 992px) {
+    .certificate-image {
+      width: 400px;
+      height: 280px;
+    }
+  }
+  @media (min-width: 1200px) {
+    .certificate-image {
+      width: 500px;
+      height: 350px;
+    }
+  }
+</style>
+
+<h1 class="text-primary mb-4"><%= @certificate.name %></h1>
+
+<div class="card mb-4">
+  <div class="card-body d-flex flex-column flex-md-row">
+    <div class="me-md-4 mb-3 mb-md-0" style="flex-shrink: 0;">
+      <div class="border border-secondary rounded d-flex align-items-center justify-content-center bg-light mx-auto certificate-image">
+        <small class="text-muted text-center">NO IMAGE<br>AVAILABLE</small>
+      </div>
+    </div>
+    
+    <div class="flex-grow-1 ms-4">
+      <h5 class="card-title mb-3">Certificate Details</h5>
+      
+        <div>
+          <p><strong>Issued To:</strong> <%= @certificate.user.name %></p>
+          <p><strong>Issued On:</strong> <%= @certificate.issued_on %></p>
+          <p><strong>Issuer:</strong> <%= @certificate.issuer.name %></p>
+        </div>
+
+        <% if @certificate.skills.any? %>
+          <div class="mt-3">
+            <p class="text-primary"><strong>Associated Skills:</strong></p>
+            <div class="d-flex flex-wrap gap-2">
+              <% @certificate.skills.each do |skill| %>
+                <span class="badge bg-primary"><%= skill.name %></span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <% if @certificate.verification_url.present? %>
+          <div class="mt-5">
+            <%= link_to "Verify Certificate", @certificate.verification_url, target: "_blank", rel: "noopener noreferrer", class: "btn btn-outline-secondary btn-sm" %>
+          </div>
+        <% end %>
+    </div>
+  </div>
+</div>
+
+<%# Navigation buttons - will be implemented properly with authentication system %>
