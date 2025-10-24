@@ -117,7 +117,7 @@ RSpec.describe Certificate, type: :model do
       skill = Skill.create!(name: 'Ruby', created_by: user.id)
       certificate.skills << skill
       certificate_skill = certificate.certificate_skills.first
-      
+
       expect {
         certificate.destroy
       }.to change { CertificateSkill.count }.by(-1)
@@ -138,18 +138,18 @@ RSpec.describe Certificate, type: :model do
     let(:skill2) { Skill.create!(name: 'Rails', created_by: user.id) }
 
     it 'can assign multiple skills' do
-      certificate.skills = [skill1, skill2]
+      certificate.skills = [ skill1, skill2 ]
       expect(certificate.skills).to contain_exactly(skill1, skill2)
     end
 
     it 'can update skills' do
-      certificate.skills = [skill1]
-      certificate.skills = [skill2]
+      certificate.skills = [ skill1 ]
+      certificate.skills = [ skill2 ]
       expect(certificate.skills).to contain_exactly(skill2)
     end
 
     it 'can clear all skills' do
-      certificate.skills = [skill1, skill2]
+      certificate.skills = [ skill1, skill2 ]
       certificate.skills = []
       expect(certificate.skills).to be_empty
     end

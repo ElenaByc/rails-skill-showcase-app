@@ -14,7 +14,7 @@ RSpec.describe 'Certificates', type: :request do
             issued_on: '2024-01-15',
             verification_url: 'https://example.com/verify/123',
             issuer_id: issuer.id,
-            skill_ids: [skill.id]
+            skill_ids: [ skill.id ]
           }
         }
       end
@@ -52,7 +52,7 @@ RSpec.describe 'Certificates', type: :request do
             name: '',
             issued_on: '',
             issuer_id: issuer.id,
-            skill_ids: [skill.id]
+            skill_ids: [ skill.id ]
           }
         }
       end
@@ -95,7 +95,7 @@ RSpec.describe 'Certificates', type: :request do
             issued_on: '2024-02-01',
             verification_url: 'https://example.com/verify/456',
             issuer_id: issuer.id,
-            skill_ids: [skill.id]
+            skill_ids: [ skill.id ]
           }
         }
       end
@@ -129,7 +129,7 @@ RSpec.describe 'Certificates', type: :request do
             name: '',
             issued_on: '',
             issuer_id: issuer.id,
-            skill_ids: [skill.id]
+            skill_ids: [ skill.id ]
           }
         }
       end

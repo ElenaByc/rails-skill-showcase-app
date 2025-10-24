@@ -52,7 +52,7 @@ group :development, :test do
 
   # Use RSpec for tests [https://github.com/rspec/rspec-rails]
   gem "rspec-rails", "~> 8.0.0"
-  
+
   # For controller testing with assigns and render_template
   gem "rails-controller-testing"
 end
