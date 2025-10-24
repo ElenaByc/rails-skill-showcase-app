@@ -28,6 +28,14 @@ Rails.application.routes.draw do
   put "/users/:user_id/issuers/:id", to: "issuers#update"
   delete "/users/:user_id/issuers/:id", to: "issuers#destroy", as: :delete_issuer_for_user
 
+  # Certificate routes with user context
+  get "/users/:user_id/certificates/new", to: "certificates#new", as: :new_user_certificate
+  post "/users/:user_id/certificates", to: "certificates#create", as: :user_certificates
+  get "/users/:user_id/certificates/:id/edit", to: "certificates#edit", as: :edit_user_certificate
+  patch "/users/:user_id/certificates/:id", to: "certificates#update", as: :user_certificate
+  put "/users/:user_id/certificates/:id", to: "certificates#update"
+  delete "/users/:user_id/certificates/:id", to: "certificates#destroy", as: :delete_user_certificate
+
   resources :certificates
   resources :skills
   resources :issuers

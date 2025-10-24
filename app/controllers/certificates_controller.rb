@@ -18,30 +18,55 @@ class CertificatesController < ApplicationController
     @certificate = Certificate.new
     @user_id = params[:user_id]
     @user = User.find(@user_id) if @user_id
+    @user_issuers = @user.created_issuers if @user
+    @user_skills = @user.created_skills if @user
   end
 
   def create
-    @certificate = Certificate.new(certificate_params)
+    @certificate = Certificate.new(certificate_params.except(:skill_ids))
     @certificate.user_id = params[:user_id]
 
     if @certificate.save
+      # Assign skills after certificate is saved
+      skill_ids = certificate_params[:skill_ids] || []
+      @certificate.skill_ids = skill_ids
       redirect_to user_dashboard_path(@certificate.user), notice: "Certificate was successfully created."
     else
       @user_id = params[:user_id]
       @user = User.find(@user_id) if @user_id
+      @user_issuers = @user.created_issuers if @user
+      @user_skills = @user.created_skills if @user
+      # Preserve skill selection for form re-render
+      @certificate.skill_ids = certificate_params[:skill_ids] || []
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
     @user = @certificate.user
+    # Get user from URL parameter for now (will change with authentication)
+    user_id = params[:user_id] || @certificate.user_id
+    @user_issuers = User.find(user_id).created_issuers
+    @user_skills = User.find(user_id).created_skills
   end
 
   def update
-    if @certificate.update(certificate_params)
+    Rails.logger.debug "Updating certificate #{@certificate.id} with params: #{certificate_params.inspect}"
+
+    if @certificate.update(certificate_params.except(:skill_ids))
+      # Update skills after certificate is updated
+      skill_ids = certificate_params[:skill_ids] || []
+      @certificate.skill_ids = skill_ids
+      Rails.logger.debug "Certificate updated successfully, redirecting to dashboard"
       redirect_to user_dashboard_path(@certificate.user), notice: "Certificate was successfully updated."
     else
       @user = @certificate.user
+      # Get user from URL parameter for now (will change with authentication)
+      user_id = params[:user_id] || @certificate.user_id
+      @user_issuers = User.find(user_id).created_issuers
+      @user_skills = User.find(user_id).created_skills
+      # Preserve skill selection for form re-render
+      @certificate.skill_ids = certificate_params[:skill_ids] || []
       render :edit, status: :unprocessable_entity
     end
   end
@@ -70,6 +95,11 @@ class CertificatesController < ApplicationController
   end
 
   def certificate_params
-    params.require(:certificate).permit(:name, :issued_on, :verification_url, :issuer_id, skill_ids: [])
+    permitted = params.require(:certificate).permit(:name, :issued_on, :verification_url, :issuer_id, skill_ids: [])
+    # Filter out empty skill_ids and convert to integers
+    if permitted[:skill_ids]
+      permitted[:skill_ids] = permitted[:skill_ids].reject(&:blank?).map(&:to_i)
+    end
+    permitted
   end
 end

@@ -1,0 +1,101 @@
+<h1 class="text-primary text-center mb-4">Edit Certificate</h1>
+
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <%= form_with model: @certificate, url: user_certificate_path(@user, @certificate), method: :patch, local: true do |form| %>
+      <%= form.hidden_field :user_id, value: @user.id %>
+      <% if @certificate.errors.any? %>
+        <div class="text-danger mb-3">
+          <h6 class="text-danger"><%= pluralize(@certificate.errors.count, "error") %> prohibited this certificate from being saved:</h6>
+          <ul class="mb-0">
+            <% @certificate.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="mb-3">
+        <%= form.label :name, "Certificate Name", class: "form-label" %>
+        <%= form.text_field :name, class: "form-control", autocomplete: "off" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :issued_on, class: "form-label" %>
+        <%= form.date_field :issued_on, class: "form-control" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :issuer_id, "Issuer", class: "form-label" %>
+        <%= form.select :issuer_id, 
+            options_from_collection_for_select(@user_issuers, :id, :name, @certificate.issuer_id),
+            { prompt: "Select an issuer" },
+            { class: "form-select" } %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :skill_ids, "Skills", class: "form-label" %>
+        <div class="border rounded" style="max-height: 200px; display: flex; flex-direction: column;">
+          <div class="p-2 border-bottom bg-light" style="position: sticky; top: 0; z-index: 10;">
+            <div class="position-relative">
+              <input type="text" class="form-control form-control-sm" placeholder="Search skills..." id="skillSearch" value="<%= params.dig(:certificate, :skill_search) %>" autocomplete="off">
+              <button class="btn btn-link btn-sm position-absolute end-0 top-50 translate-middle-y" type="button" id="clearSearch" style="z-index: 5; padding: 0.25rem 0.5rem; border: none; background: none;">
+                <i class="bi bi-x-lg text-muted" style="font-size: 0.875rem;"></i>
+              </button>
+            </div>
+          </div>
+          <div class="p-2" style="overflow-y: auto; flex: 1;">
+            <div id="skillList">
+              <% @user_skills.each do |skill| %>
+                <div class="form-check skill-item">
+                  <%= check_box_tag "certificate[skill_ids][]", skill.id, @certificate.skill_ids.include?(skill.id), 
+                      class: "form-check-input", id: "skill_#{skill.id}" %>
+                  <%= label_tag "skill_#{skill.id}", skill.name, class: "form-check-label" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        <small class="form-text text-muted">Type to search skills, then select one or more</small>
+      </div>
+
+      <script>
+        const searchInput = document.getElementById('skillSearch');
+        const clearBtn = document.getElementById('clearSearch');
+        const skillItems = document.querySelectorAll('.skill-item');
+
+        function filterSkills() {
+          const searchTerm = searchInput.value.toLowerCase();
+          
+          skillItems.forEach(function(item) {
+            const skillName = item.querySelector('label').textContent.toLowerCase();
+            if (skillName.includes(searchTerm)) {
+              item.style.display = 'block';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        }
+
+        searchInput.addEventListener('input', filterSkills);
+        
+        clearBtn.addEventListener('click', function() {
+          searchInput.value = '';
+          filterSkills();
+          searchInput.focus();
+        });
+      </script>
+
+      <div class="mb-3">
+        <%= form.label :verification_url, "Verification URL", class: "form-label" %>
+        <%= form.url_field :verification_url, class: "form-control", autocomplete: "off" %>
+        <small class="form-text text-muted">Optional: Link to verify this certificate online</small>
+      </div>
+
+      <div class="mb-3 d-flex justify-content-center">
+        <%= link_to "Cancel", user_dashboard_path(@user), class: "btn btn-outline-secondary me-4" %>
+        <%= form.submit "Update Certificate", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

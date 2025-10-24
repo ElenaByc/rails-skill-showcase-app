@@ -24,7 +24,7 @@
       </div>
       <div class="d-flex gap-2">
         <%= link_to "Details", certificate_path(certificate), class: "btn btn-outline-primary btn-sm" %>
-        <%= link_to "Edit", edit_certificate_path(certificate), class: "btn btn-outline-primary btn-sm" %>
+        <%= link_to "Edit", edit_user_certificate_path(@user, certificate), class: "btn btn-outline-primary btn-sm" %>
         <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteCertificateModal<%= certificate.id %>">
           Delete
         </button>
@@ -35,7 +35,7 @@
 
 <br>
 
-<p class="text-center mb-4"><%= link_to "Add New Certificate", new_certificate_path, class: "btn btn-primary" %></p>
+<p class="text-center mb-4"><%= link_to "Add New Certificate", new_user_certificate_path(@user), class: "btn btn-primary" %></p>
 
 <div class="text-center mb-4 mt-5">
   <%= link_to "Manage Skills", user_skills_path(@user), class: "btn btn-outline-primary me-5" %>
@@ -69,7 +69,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <%= link_to "Delete Certificate", certificate_path(certificate), class: "btn btn-outline-danger", data: { turbo_method: :delete } %>
+          <%= link_to "Delete Certificate", delete_user_certificate_path(@user, certificate), class: "btn btn-outline-danger", data: { turbo_method: :delete } %>
         </div>
       </div>
     </div>
