@@ -36,13 +36,13 @@ RSpec.describe User, type: :model do
     end
 
     context 'when the user has certificates with skills' do
-      let(:issuer) { Issuer.create!(name: 'SkillCert Inc.') }
-      let(:ruby) { Skill.create!(name: 'Ruby') }
-      let(:sql) { Skill.create!(name: 'SQL') }
+      let(:issuer) { Issuer.create!(name: 'SkillCert Inc.', created_by: user.id) }
+      let(:ruby) { Skill.create!(name: 'Ruby', created_by: user.id) }
+      let(:sql) { Skill.create!(name: 'SQL', created_by: user.id) }
 
       before do
-        cert1 = Certificate.create!(name: 'Ruby Cert', user: user, issuer: issuer)
-        cert2 = Certificate.create!(name: 'SQL Cert', user: user, issuer: issuer)
+        cert1 = Certificate.create!(name: 'Ruby Cert', issued_on: '2024-01-15', user: user, issuer: issuer)
+        cert2 = Certificate.create!(name: 'SQL Cert', issued_on: '2024-01-15', user: user, issuer: issuer)
 
         CertificateSkill.create!(certificate: cert1, skill: ruby)
         CertificateSkill.create!(certificate: cert2, skill: sql)
@@ -69,11 +69,11 @@ RSpec.describe User, type: :model do
     end
 
     context 'when the user has certificates but none with the given skill' do
-      let(:issuer) { Issuer.create!(name: 'SkillCert Inc.') }
-      let(:sql) { Skill.create!(name: 'SQL') }
+      let(:issuer) { Issuer.create!(name: 'SkillCert Inc.', created_by: user.id) }
+      let(:sql) { Skill.create!(name: 'SQL', created_by: user.id) }
 
       before do
-        cert = Certificate.create!(name: 'SQL Cert', user: user, issuer: issuer)
+        cert = Certificate.create!(name: 'SQL Cert', issued_on: '2024-01-15', user: user, issuer: issuer)
         CertificateSkill.create!(certificate: cert, skill: sql)
       end
 
@@ -83,11 +83,11 @@ RSpec.describe User, type: :model do
     end
 
     context 'when the user has certificates with the given skill' do
-      let(:issuer) { Issuer.create!(name: 'SkillCert Inc.') }
-      let(:ruby) { Skill.create!(name: 'Ruby') }
+      let(:issuer) { Issuer.create!(name: 'SkillCert Inc.', created_by: user.id) }
+      let(:ruby) { Skill.create!(name: 'Ruby', created_by: user.id) }
 
-      let!(:cert1) { Certificate.create!(name: 'Ruby Cert 1', user: user, issuer: issuer) }
-      let!(:cert2) { Certificate.create!(name: 'Ruby Cert 2', user: user, issuer: issuer) }
+      let!(:cert1) { Certificate.create!(name: 'Ruby Cert 1', issued_on: '2024-01-15', user: user, issuer: issuer) }
+      let!(:cert2) { Certificate.create!(name: 'Ruby Cert 2', issued_on: '2024-01-15', user: user, issuer: issuer) }
 
       before do
         CertificateSkill.create!(certificate: cert1, skill: ruby)
