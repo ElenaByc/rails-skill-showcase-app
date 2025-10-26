@@ -1,0 +1,27 @@
+<h1>All Issuers</h1>
+
+<% if @issuers.any? %>
+  <ul>
+    <% @issuers.each do |issuer| %>
+      <li>
+        <h4><%= issuer.name %></h4>
+        <% if issuer.description.present? %>
+          <p><%= issuer.description %></p>
+        <% end %>
+        <p>
+          <strong>Created by:</strong> <%= issuer.creator&.name || "Unknown" %><br>
+          <strong>Certificates:</strong> <%= issuer.certificates.count %>
+        </p>
+        <p>
+          <%= link_to "View Details", issuer_path(issuer) %>
+        </p>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No issuers have been created yet.</p>
+<% end %>
+
+<br><br><hr><br>
+
+<p><%= link_to "Create New Issuer", new_issuer_path %></p>

@@ -1,0 +1,30 @@
+<h1 class="text-primary mb-4"><%= @issuer.name %></h1>
+
+<% if @issuer.description.present? %>
+  <p><strong>Description:</strong> <%= @issuer.description %></p>
+<% end %>
+
+<% if @issuer.website_url.present? %>
+  <p><strong>Website:</strong> <%= link_to @issuer.website_url, @issuer.website_url, target: "_blank" %></p>
+<% end %>
+
+<h3 class="text-primary mb-3 mt-4">Certificates issued by this issuer</h3>
+
+<% if @certificates.any? %>
+  <ul>
+    <% @certificates.each do |certificate| %>
+      <li>
+        <h4><%= certificate.name %></h4>
+        <p>
+          <strong>Issued on:</strong> <%= certificate.issued_on %><br>
+          <% if certificate.skills.any? %>
+            <strong>Skills:</strong> <%= certificate.skills.pluck(:name).join(", ") %><br>
+          <% end %>
+        </p>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No certificates have been issued by this issuer yet.</p>
+<% end %>
+

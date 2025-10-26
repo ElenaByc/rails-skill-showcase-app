@@ -1,21 +1,51 @@
-<h1>Manage Skills</h1>
+<h1 class="text-primary text-center mb-4">Manage Skills</h1>
+<% @skills.each do |skill| %>
+  <div class="card mb-3">
+    <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-center">
+      <div class="mb-2 mb-md-0">
+        <h5 class="card-title mb-0">
+          <strong><%= skill.name %></strong> - <%= pluralize(skill.certificates.where(user_id: @user.id).count, "certificate") %>
+        </h5>
+      </div>
+      <div class="d-flex gap-2">
+        <%= link_to "Details", skill_path(skill), class: "btn btn-outline-primary btn-sm" %>
+        <%= link_to "Edit", edit_skill_for_user_path(@user, skill), class: "btn btn-outline-primary btn-sm" %>
+        <% if skill.certificates.where(user_id: @user.id).any? %>
+          <button class="btn btn-secondary btn-sm disabled">Delete</button>
+        <% else %>
+          <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteSkillModal<%= skill.id %>">
+            Delete
+          </button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
 
-<ul>
-  <% @skills.each do |skill| %>
-    <li>
-      <%= skill.name %> —
-      <%= pluralize(skill.certificates.where(user_id: @user.id).count, "certificate") %><br>
+<br>
 
-      <%= link_to "Edit", edit_skill_path(skill) %> |
+<p class="text-center"><%= link_to "Create New Skill", new_skill_for_user_path(@user), class: "btn btn-primary" %></p>
 
-      <% if skill.certificates.where(user_id: @user.id).any? %>
-        <span>Delete (disabled)</span>
-      <% else %>
-        <%= link_to "Delete", skill_path(skill), method: :delete, data: { confirm: "Are you sure?" } %>
-      <% end %>
-    </li>
+<!-- Delete Confirmation Modals -->
+<% @skills.each do |skill| %>
+  <% unless skill.certificates.where(user_id: @user.id).any? %>
+    <div class="modal fade" id="deleteSkillModal<%= skill.id %>" tabindex="-1" aria-labelledby="deleteSkillModalLabel<%= skill.id %>" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteSkillModalLabel<%= skill.id %>">Confirm Delete</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>You are about to delete the skill <strong>"<%= skill.name %>"</strong>.</p>
+            <p class="text-danger">This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <%= link_to "Delete Skill", delete_skill_for_user_path(@user, skill), class: "btn btn-outline-danger", data: { turbo_method: :delete } %>
+          </div>
+        </div>
+      </div>
+    </div>
   <% end %>
-</ul>
-
-<p><%= link_to "Create New Skill", new_skill_path %></p>
-<p><%= link_to "Return to Dashboard", user_dashboard_path(@user) %></p>
+<% end %>

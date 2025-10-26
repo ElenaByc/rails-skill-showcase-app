@@ -1,0 +1,43 @@
+<h1 class="text-primary text-center mb-4">Create New Issuer</h1>
+
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <%= form_with model: @issuer, url: user_issuers_path(params[:id]), local: true do |form| %>
+  <% if @issuer.errors.any? %>
+    <div class="text-danger mb-3">
+      <h6 class="text-danger"><%= pluralize(@issuer.errors.count, "error") %> prohibited this issuer from being saved:</h6>
+      <ul class="mb-0">
+        <% @issuer.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :name, class: "form-label" %>
+    <%= form.text_field :name, class: "form-control", autocomplete: "off" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :website_url, class: "form-label" %>
+    <%= form.text_field :website_url, class: "form-control", autocomplete: "off" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :logo_url, class: "form-label" %>
+    <%= form.text_field :logo_url, class: "form-control", autocomplete: "off" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :description, class: "form-label" %>
+    <%= form.text_area :description, rows: 4, class: "form-control" %>
+  </div>
+
+  <div class="mb-3 d-flex justify-content-center">
+    <%= link_to "Cancel", user_issuers_path(params[:id]), class: "btn btn-outline-secondary me-4" %>
+    <%= form.submit "Create Issuer", class: "btn btn-primary" %>
+  </div>
+  <% end %>
+  </div>
+</div>
