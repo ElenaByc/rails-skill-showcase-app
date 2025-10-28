@@ -13,13 +13,13 @@
           <%= form.password_field :password, class: "form-control", required: true, autocomplete: "off" %>
         </div>
 
-        <div class="d-grid gap-2">
-          <%= form.submit "Login", class: "btn btn-primary" %>
+        <div class="text-center mb-5">
+          <%= form.submit "Login", class: "btn btn-primary px-4" %>
         </div>
       <% end %>
 
-      <div class="text-center mt-3">
-        <p>Don't have an account? <%= link_to "Register here", register_path, class: "btn btn-outline-primary btn-sm" %></p>
+      <div class="text-center">
+        <p>Don't have an account? <%= link_to "Register here", register_path, class: "btn btn-outline-primary btn-sm ms-2" %></p>
       </div>
     </div>
   </div>
