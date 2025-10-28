@@ -9,7 +9,7 @@
       </div>
       <div class="d-flex gap-2">
         <%= link_to "Details", skill_path(skill), class: "btn btn-outline-primary btn-sm" %>
-        <%= link_to "Edit", edit_skill_for_user_path(@user, skill), class: "btn btn-outline-primary btn-sm" %>
+        <%= link_to "Edit", edit_skill_path(skill), class: "btn btn-outline-primary btn-sm" %>
         <% if skill.certificates.where(user_id: @user.id).any? %>
           <button class="btn btn-secondary btn-sm disabled">Delete</button>
         <% else %>
@@ -24,7 +24,7 @@
 
 <br>
 
-<p class="text-center"><%= link_to "Create New Skill", new_skill_for_user_path(@user), class: "btn btn-primary" %></p>
+<p class="text-center"><%= link_to "Create New Skill", new_skill_path, class: "btn btn-primary" %></p>
 
 <!-- Delete Confirmation Modals -->
 <% @skills.each do |skill| %>
@@ -42,7 +42,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-            <%= link_to "Delete Skill", delete_skill_for_user_path(@user, skill), class: "btn btn-outline-danger", data: { turbo_method: :delete } %>
+            <%= link_to "Delete Skill", delete_skill_path(skill), class: "btn btn-outline-danger", data: { turbo_method: :delete } %>
           </div>
         </div>
       </div>

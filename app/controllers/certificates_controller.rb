@@ -1,4 +1,5 @@
 class CertificatesController < ApplicationController
+  before_action :require_login, only: [:new, :create, :edit, :update, :destroy]
   before_action :set_certificate, only: [ :show, :edit, :update, :destroy ]
   before_action :check_ownership, only: [ :edit, :update, :destroy ]
 

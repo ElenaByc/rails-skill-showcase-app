@@ -50,28 +50,22 @@
         
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
-            <% if @user %>
-              <% user_id = @user.id %>
-            <% elsif params[:id] || params[:user_id] %>
-              <% user_id = params[:user_id] || params[:id] %>
-            <% end %>
-            <% if user_id %>
-              <li class="nav-item">
-                <%= link_to "Dashboard", user_dashboard_path(user_id), 
-                    class: "nav-link #{'active' if current_page?(user_dashboard_path(user_id))}" %>
-              </li>
-              <li class="nav-item">
-                <%= link_to "Skills", user_skills_path(user_id), 
-                    class: "nav-link #{'active' if controller_name == 'skills'}" %>
-              </li>
-              <li class="nav-item">
-                <%= link_to "Issuers", user_issuers_path(user_id), 
-                    class: "nav-link #{'active' if controller_name == 'issuers'}" %>
-              </li>
-              <li class="nav-item">
-                <%= link_to "Showcase", user_showcase_path(user_id), 
-                    class: "nav-link #{'active' if current_page?(user_showcase_path(user_id))}" %>
-              </li>
+            <% if session[:user_id] %>
+              <% current_user = User.find_by(id: session[:user_id]) %>
+              <% if current_user %>
+                <li class="nav-item">
+                  <%= link_to "Dashboard", dashboard_path, class: "nav-link #{'active' if current_page?(dashboard_path)}" %>
+                </li>
+                <li class="nav-item">
+                  <%= link_to "Skills", skills_path, class: "nav-link #{'active' if controller_name == 'skills'}" %>
+                </li>
+                <li class="nav-item">
+                  <%= link_to "Issuers", issuers_path, class: "nav-link #{'active' if controller_name == 'issuers'}" %>
+                </li>
+                <li class="nav-item">
+                  <%= link_to "Showcase", user_showcase_path(current_user), class: "nav-link #{'active' if controller_name == 'users' && action_name == 'showcase'}" %>
+                </li>
+              <% end %>
             <% end %>
           </ul>
         </div>
@@ -79,6 +73,20 @@
     </nav>
   </header>
   <div class="container p-4">
+    <% if notice %>
+      <div class="alert alert-success alert-dismissible fade show w-50 mx-auto text-success text-center" role="alert">
+        <%= notice %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="transform: scale(0.75);"></button>
+      </div>
+    <% end %>
+    
+    <% if flash[:alert] || flash.now[:alert] %>
+      <div class="alert alert-danger alert-dismissible fade show w-50 mx-auto text-danger text-center" role="alert">
+        <%= flash[:alert] || flash.now[:alert] %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="transform: scale(0.75);"></button>
+      </div>
+    <% end %>
+    
     <%= yield %>
   </div>
   </body>
