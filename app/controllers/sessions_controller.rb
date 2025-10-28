@@ -1,5 +1,6 @@
 class SessionsController < ApplicationController
-  before_action :require_login, only: [:destroy]
+  before_action :require_login, only: [ :destroy ]
+  before_action :redirect_if_logged_in, only: [ :new ]
 
   def new
     # Show login form - no data needed
@@ -22,5 +23,13 @@ class SessionsController < ApplicationController
   def destroy
     session[:user_id] = nil
     redirect_to root_path, notice: "Successfully logged out!"
+  end
+
+  private
+
+  def redirect_if_logged_in
+    if logged_in?
+      redirect_to dashboard_path
+    end
   end
 end

@@ -2,8 +2,7 @@
 
 <div class="row justify-content-center">
   <div class="col-md-8 col-lg-6">
-    <%= form_with model: @certificate, url: user_certificate_path(@user, @certificate), method: :patch, local: true do |form| %>
-      <%= form.hidden_field :user_id, value: @user.id %>
+    <%= form_with model: @certificate, url: certificate_path(@certificate), method: :patch, local: true do |form| %>
       <% if @certificate.errors.any? %>
         <div class="text-danger mb-3">
           <h6 class="text-danger"><%= pluralize(@certificate.errors.count, "error") %> prohibited this certificate from being saved:</h6>
@@ -93,7 +92,7 @@
       </div>
 
       <div class="mb-3 d-flex justify-content-center">
-        <%= link_to "Cancel", user_dashboard_path(@user), class: "btn btn-outline-secondary me-4" %>
+        <%= link_to "Cancel", dashboard_path, class: "btn btn-outline-secondary me-4" %>
         <%= form.submit "Update Certificate", class: "btn btn-primary" %>
       </div>
     <% end %>

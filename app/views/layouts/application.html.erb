@@ -42,7 +42,7 @@
   <header>
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
       <div class="container">
-        <a class="navbar-brand fw-bold text-primary fs-3" href="<%= root_path %>">Rails Skill Showcase App</a>
+        <a class="navbar-brand fw-bold text-primary fs-3 me-3" href="<%= root_path %>">Rails Skill Showcase App</a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
@@ -66,6 +66,22 @@
                   <%= link_to "Showcase", user_showcase_path(current_user), class: "nav-link #{'active' if controller_name == 'users' && action_name == 'showcase'}" %>
                 </li>
               <% end %>
+            <% end %>
+          </ul>
+          <ul class="navbar-nav align-items-center">
+            <% if session[:user_id] %>
+              <% if current_user %>
+                <li class="nav-item me-3">
+                  <span class="mb-0">Welcome, <%= current_user.name %>!</span>
+                </li>
+                <li class="nav-item">
+                  <%= button_to "Logout", logout_path, method: :delete, class: "btn btn-primary btn-sm", data: { confirm: "Are you sure you want to log out?" } %>
+                </li>
+              <% end %>
+            <% else %>
+              <li class="nav-item">
+                <%= link_to "Login", login_path, class: "btn btn-primary btn-sm" %>
+              </li>
             <% end %>
           </ul>
         </div>
