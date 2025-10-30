@@ -1,7 +1,7 @@
 class SkillsController < ApplicationController
   before_action :require_login, only: [ :index, :new, :create, :edit, :update, :destroy ]
   before_action :set_skill, only: [ :show, :edit, :update, :destroy ]
-  before_action :check_ownership, only: [ :edit, :update ]
+  before_action :check_ownership, only: [ :edit, :update, :destroy ]
 
   def show
     @user = User.find(@skill.created_by)
