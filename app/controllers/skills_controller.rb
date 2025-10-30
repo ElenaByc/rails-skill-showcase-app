@@ -3,10 +3,6 @@ class SkillsController < ApplicationController
   before_action :set_skill, only: [ :show, :edit, :update, :destroy ]
   before_action :check_ownership, only: [ :edit, :update ]
 
-  def index
-    @skills = Skill.all.includes(:creator)
-  end
-
   def show
     @user = User.find(@skill.created_by)
     @certificates = @skill.certificates.includes(:user, :issuer)

@@ -3,10 +3,6 @@ class IssuersController < ApplicationController
   before_action :set_issuer, only: [ :show, :edit, :update, :destroy ]
   before_action :check_ownership, only: [ :edit, :update, :destroy ]
 
-  def index
-    @issuers = Issuer.all.includes(:creator)
-  end
-
   def show
     @user = User.find(@issuer.created_by)
     @certificates = @issuer.certificates.includes(:user, :skills)
