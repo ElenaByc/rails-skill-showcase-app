@@ -1,5 +1,11 @@
-<div class="text-center">
-  <h1 class="text-danger mb-4">Certificate Not Found</h1>
-  <p class="mb-4">The certificate you're looking for doesn't exist or has been removed.</p>
-  <%= link_to "Back to Home", root_path, class: "btn btn-primary" %>
-</div>
+<h1 class="text-primary text-center mb-4">Certificate Not Found</h1>
+
+<p class="text-center mb-4">The certificate you're looking for doesn't exist or has been removed.</p>
+
+<p class="text-center">
+  <% if session[:user_id] %>
+    <%= link_to "Go to Dashboard", dashboard_path, class: "btn btn-primary" %>
+  <% else %>
+    <%= link_to "Go Home", root_path, class: "btn btn-primary" %>
+  <% end %>
+</p>

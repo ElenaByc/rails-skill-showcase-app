@@ -1,0 +1,20 @@
+<h1 class="text-primary text-center mb-4">Issuer Not Found</h1>
+
+<p class="text-center">
+  <% if defined?(@issuer_id) && @issuer_id.present? %>
+    The issuer with ID <strong><%= @issuer_id %></strong> doesn't exist or you don't have access.
+  <% else %>
+    The requested issuer doesn't exist or you don't have access.
+  <% end %>
+  </p>
+<p class="text-center mb-4">Please check the URL or try a different issuer.</p>
+
+<p class="text-center">
+  <% if session[:user_id] %>
+    <%= link_to "Go to Issuers", issuers_path, class: "btn btn-primary" %>
+  <% else %>
+    <%= link_to "Go Home", root_path, class: "btn btn-primary" %>
+  <% end %>
+</p>
+
+
