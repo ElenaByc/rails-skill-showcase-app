@@ -5,14 +5,25 @@
 
   <div class="features">
     <h3 class="text-primary text-center mb-3">Features</h3>
-    <ul>
-      <li>Create custom skills and certificates</li>
-      <li>Build a personalized showcase page</li>
-      <li>Share your professional profile with anyone</li>
-      <li>Control how you present your expertise</li>
+    <ul class="mb-5">
+      <li class="mb-2">Create custom skills and certificates</li>
+      <li class="mb-2">Build a personalized showcase page</li>
+      <li class="mb-2">Share your professional profile with anyone</li>
+      <li class="mb-2">Control how you present your expertise</li>
+      <li class="mb-2">Projects (Coming Soon) — showcase work alongside certificates</li>
     </ul>
   </div>
-  
+
+  <% if session[:user_id] %>
+    <div class="mb-5 text-center">
+      <%= link_to "Go to Dashboard", dashboard_path, class: "btn btn-primary px-4" %>
+    </div>
+  <% else %>
+    <div class="mb-5 text-center">
+      <%= link_to "Login", login_path, class: "btn btn-primary me-5 px-4" %>
+      <%= link_to "Create Account", register_path, class: "btn btn-primary px-4" %>
+    </div>
+  <% end %>
 </div>
 
 

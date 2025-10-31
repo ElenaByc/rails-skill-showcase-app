@@ -9,24 +9,23 @@
 #   end
 
 # Clear existing data
-# Destroy certificates first (this clears certificate_skills automatically)
-Certificate.destroy_all
-# Then destroy the main entities
+# Destroy in FK-safe order
+Certificate.destroy_all       # depends on users, issuers
+Skill.destroy_all             # depends on users
+Issuer.destroy_all            # depends on users
 User.destroy_all
-Skill.destroy_all
-Issuer.destroy_all
 
 # Create sample users
 user1 = User.create!(
   name: "John Doe",
   email: "john@example.com",
-  password: "password123"
+  password: "pass123"
 )
 
 user2 = User.create!(
   name: "Jane Smith",
   email: "jane@example.com",
-  password: "password123"
+  password: "pass123"
 )
 
 # Create sample skills - EACH USER CREATES THEIR OWN SKILLS

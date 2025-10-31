@@ -5,7 +5,11 @@ RSpec.describe 'Certificates', type: :request do
   let(:issuer) { Issuer.create!(name: 'Test Issuer', created_by: user.id) }
   let(:skill) { Skill.create!(name: 'Ruby', created_by: user.id) }
 
-  describe 'POST /users/:user_id/certificates' do
+  def login(user)
+    post login_path, params: { email: user.email, password: 'password' }
+  end
+
+  describe 'POST /certificates' do
     context 'with valid parameters' do
       let(:valid_params) do
         {
@@ -20,26 +24,30 @@ RSpec.describe 'Certificates', type: :request do
       end
 
       it 'creates a new certificate' do
+        login(user)
         expect {
-          post "/users/#{user.id}/certificates", params: valid_params
+          post certificates_path, params: valid_params
         }.to change(Certificate, :count).by(1)
       end
 
       it 'assigns the correct user to the certificate' do
-        post "/users/#{user.id}/certificates", params: valid_params
+        login(user)
+        post certificates_path, params: valid_params
         certificate = Certificate.last
         expect(certificate.user).to eq(user)
       end
 
       it 'assigns skills to the certificate' do
-        post "/users/#{user.id}/certificates", params: valid_params
+        login(user)
+        post certificates_path, params: valid_params
         certificate = Certificate.last
         expect(certificate.skills).to include(skill)
       end
 
       it 'redirects to user dashboard with success message' do
-        post "/users/#{user.id}/certificates", params: valid_params
-        expect(response).to redirect_to(user_dashboard_path(user))
+        login(user)
+        post certificates_path, params: valid_params
+        expect(response).to redirect_to(dashboard_path)
         follow_redirect!
         expect(flash[:notice]).to eq('Certificate was successfully created.')
       end
@@ -58,33 +66,36 @@ RSpec.describe 'Certificates', type: :request do
       end
 
       it 'does not create a new certificate' do
+        login(user)
         expect {
-          post "/users/#{user.id}/certificates", params: invalid_params
+          post certificates_path, params: invalid_params
         }.not_to change(Certificate, :count)
       end
 
       it 'renders the new template' do
-        post "/users/#{user.id}/certificates", params: invalid_params
+        login(user)
+        post certificates_path, params: invalid_params
         expect(response).to render_template(:new)
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'preserves skill selection on validation error' do
-        post "/users/#{user.id}/certificates", params: invalid_params
+        login(user)
+        post certificates_path, params: invalid_params
         certificate = assigns(:certificate)
         expect(certificate.skill_ids).to include(skill.id)
       end
     end
   end
 
-  describe 'PATCH /users/:user_id/certificates/:id' do
+  describe 'PATCH /certificates/:id' do
     let(:certificate) do
-      Certificate.create!(
+      Certificate.new(
         name: 'Original Certificate',
         issued_on: '2024-01-01',
         user: user,
         issuer: issuer
-      )
+      ).tap { |c| c.skills << skill; c.save! }
     end
 
     context 'with valid parameters' do
@@ -101,7 +112,8 @@ RSpec.describe 'Certificates', type: :request do
       end
 
       it 'updates the certificate' do
-        patch "/users/#{user.id}/certificates/#{certificate.id}", params: valid_params
+        login(user)
+        patch certificate_path(certificate), params: valid_params
         certificate.reload
         expect(certificate.name).to eq('Updated Certificate Name')
         expect(certificate.issued_on).to eq(Date.parse('2024-02-01'))
@@ -109,14 +121,16 @@ RSpec.describe 'Certificates', type: :request do
       end
 
       it 'updates the certificate skills' do
-        patch "/users/#{user.id}/certificates/#{certificate.id}", params: valid_params
+        login(user)
+        patch certificate_path(certificate), params: valid_params
         certificate.reload
         expect(certificate.skills).to include(skill)
       end
 
       it 'redirects to user dashboard with success message' do
-        patch "/users/#{user.id}/certificates/#{certificate.id}", params: valid_params
-        expect(response).to redirect_to(user_dashboard_path(user))
+        login(user)
+        patch certificate_path(certificate), params: valid_params
+        expect(response).to redirect_to(dashboard_path)
         follow_redirect!
         expect(flash[:notice]).to eq('Certificate was successfully updated.')
       end
@@ -136,91 +150,102 @@ RSpec.describe 'Certificates', type: :request do
 
       it 'does not update the certificate' do
         original_name = certificate.name
-        patch "/users/#{user.id}/certificates/#{certificate.id}", params: invalid_params
+        login(user)
+        patch certificate_path(certificate), params: invalid_params
         certificate.reload
         expect(certificate.name).to eq(original_name)
       end
 
       it 'renders the edit template' do
-        patch "/users/#{user.id}/certificates/#{certificate.id}", params: invalid_params
+        login(user)
+        patch certificate_path(certificate), params: invalid_params
         expect(response).to render_template(:edit)
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'preserves skill selection on validation error' do
-        patch "/users/#{user.id}/certificates/#{certificate.id}", params: invalid_params
+        login(user)
+        patch certificate_path(certificate), params: invalid_params
         certificate.reload
         expect(certificate.skill_ids).to include(skill.id)
       end
     end
   end
 
-  describe 'DELETE /users/:user_id/certificates/:id' do
+  describe 'DELETE /certificates/:id' do
     let!(:certificate) do
-      Certificate.create!(
+      Certificate.new(
         name: 'Certificate to Delete',
         issued_on: '2024-01-01',
         user: user,
         issuer: issuer
-      )
+      ).tap { |c| c.skills << skill; c.save! }
     end
 
     it 'deletes the certificate' do
+      login(user)
       expect {
-        delete "/users/#{user.id}/certificates/#{certificate.id}"
+        delete delete_certificate_path(certificate)
       }.to change(Certificate, :count).by(-1)
     end
 
     it 'redirects to user dashboard with success message' do
-      delete "/users/#{user.id}/certificates/#{certificate.id}"
-      expect(response).to redirect_to(user_dashboard_path(user))
+      login(user)
+      delete delete_certificate_path(certificate)
+      expect(response).to redirect_to(dashboard_path)
       follow_redirect!
         expect(flash[:notice]).to eq('Certificate was successfully deleted.')
     end
   end
 
-  describe 'GET /users/:user_id/certificates/new' do
+  describe 'GET /certificates/new' do
     it 'renders the new template' do
-      get "/users/#{user.id}/certificates/new"
+      login(user)
+      get new_certificate_path
       expect(response).to render_template(:new)
       expect(response).to have_http_status(:success)
     end
 
     it 'assigns a new certificate' do
-      get "/users/#{user.id}/certificates/new"
+      login(user)
+      get new_certificate_path
       expect(assigns(:certificate)).to be_a_new(Certificate)
     end
 
     it 'assigns user issuers and skills' do
-      get "/users/#{user.id}/certificates/new"
+      login(user)
+      get new_certificate_path
       expect(assigns(:user_issuers)).to eq(user.created_issuers)
       expect(assigns(:user_skills)).to eq(user.created_skills)
     end
   end
 
-  describe 'GET /users/:user_id/certificates/:id/edit' do
+  describe 'GET /certificates/:id/edit' do
     let(:certificate) do
-      Certificate.create!(
+      Certificate.new(
         name: 'Certificate to Edit',
         issued_on: '2024-01-01',
         user: user,
         issuer: issuer
-      )
+      ).tap { |c| c.skills << skill; c.save! }
     end
 
     it 'renders the edit template' do
-      get "/users/#{user.id}/certificates/#{certificate.id}/edit"
+      login(user)
+      get edit_certificate_path(certificate)
       expect(response).to render_template(:edit)
       expect(response).to have_http_status(:success)
     end
 
     it 'assigns the correct certificate' do
-      get "/users/#{user.id}/certificates/#{certificate.id}/edit"
+      login(user)
+      get edit_certificate_path(certificate)
       expect(assigns(:certificate)).to eq(certificate)
     end
 
     it 'assigns user issuers and skills' do
-      get "/users/#{user.id}/certificates/#{certificate.id}/edit"
+      login(user)
+      get edit_certificate_path(certificate)
       expect(assigns(:user_issuers)).to eq(user.created_issuers)
       expect(assigns(:user_skills)).to eq(user.created_skills)
     end

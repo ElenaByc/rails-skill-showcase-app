@@ -1,10 +1,7 @@
 class SkillsController < ApplicationController
+  before_action :require_login, only: [ :index, :new, :create, :edit, :update, :destroy ]
   before_action :set_skill, only: [ :show, :edit, :update, :destroy ]
-  before_action :check_ownership, only: [ :edit, :update ]
-
-  def index
-    @skills = Skill.all.includes(:creator)
-  end
+  before_action :check_ownership, only: [ :edit, :update, :destroy ]
 
   def show
     @user = User.find(@skill.created_by)
@@ -13,15 +10,15 @@ class SkillsController < ApplicationController
 
   def new
     @skill = Skill.new
-    @user_id = params[:id] # Get user ID from the route parameter
+    @user_id = session[:user_id] # Get user ID from session
   end
 
   def create
     @skill = Skill.new(skill_params)
-    @skill.created_by = params[:id] # Get user ID from the route parameter
+    @skill.created_by = session[:user_id] # Get user ID from session
 
     if @skill.save
-      redirect_to user_skills_path(params[:id]), notice: "Skill was successfully created."
+      redirect_to skills_path, notice: "Skill was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
@@ -32,22 +29,21 @@ class SkillsController < ApplicationController
 
   def update
     if @skill.update(skill_params)
-      redirect_to user_skills_path(@skill.created_by), notice: "Skill was successfully updated."
+      redirect_to skills_path, notice: "Skill was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    user_id = params[:user_id] || @skill.created_by
     @skill.destroy
-    redirect_to user_skills_path(user_id), notice: "Skill was successfully deleted."
+    redirect_to skills_path, notice: "Skill was successfully deleted."
   end
 
-  def user_index
-    @user = User.find_by(id: params[:id])
+  def index
+    @user = User.find(session[:user_id])
     unless @user
-      @user_id = params[:id]
+      @user_id = session[:user_id]
       render "users/user_not_found", status: :not_found
       return
     end
@@ -66,9 +62,9 @@ class SkillsController < ApplicationController
   end
 
   def check_ownership
-    current_user_id = params[:user_id] # TODO: Replace with current_user.id when authentication is added
+    current_user_id = session[:user_id]
     unless current_user_id && @skill.created_by.to_s == current_user_id.to_s
-      redirect_to user_skills_path(@skill.created_by), alert: "You can only edit skills you created."
+      redirect_to skills_path, alert: "You can only edit skills you created."
       nil
     end
   end

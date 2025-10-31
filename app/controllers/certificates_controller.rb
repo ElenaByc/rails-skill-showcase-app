@@ -1,4 +1,5 @@
 class CertificatesController < ApplicationController
+  before_action :require_login, only: [ :new, :create, :edit, :update, :destroy ]
   before_action :set_certificate, only: [ :show, :edit, :update, :destroy ]
   before_action :check_ownership, only: [ :edit, :update, :destroy ]
 
@@ -16,28 +17,26 @@ class CertificatesController < ApplicationController
 
   def new
     @certificate = Certificate.new
-    @user_id = params[:user_id]
-    @user = User.find(@user_id) if @user_id
-    @user_issuers = @user.created_issuers if @user
-    @user_skills = @user.created_skills if @user
+    @user = current_user
+    @user_issuers = @user&.created_issuers
+    @user_skills = @user&.created_skills
   end
 
   def create
-    @certificate = Certificate.new(certificate_params.except(:skill_ids))
-    @certificate.user_id = params[:user_id]
+    @certificate = Certificate.new
+    @certificate.user_id = current_user&.id
+
+    # Assign attributes and skills BEFORE save so validation can see them
+    skill_ids = certificate_params[:skill_ids] || []
+    @certificate.assign_attributes(certificate_params.except(:skill_ids))
+    @certificate.skill_ids = skill_ids
 
     if @certificate.save
-      # Assign skills after certificate is saved
-      skill_ids = certificate_params[:skill_ids] || []
-      @certificate.skill_ids = skill_ids
-      redirect_to user_dashboard_path(@certificate.user), notice: "Certificate was successfully created."
+      redirect_to dashboard_path, notice: "Certificate was successfully created."
     else
-      @user_id = params[:user_id]
-      @user = User.find(@user_id) if @user_id
-      @user_issuers = @user.created_issuers if @user
-      @user_skills = @user.created_skills if @user
-      # Preserve skill selection for form re-render
-      @certificate.skill_ids = certificate_params[:skill_ids] || []
+      @user = current_user
+      @user_issuers = @user&.created_issuers
+      @user_skills = @user&.created_skills
       render :new, status: :unprocessable_entity
     end
   end
@@ -53,28 +52,27 @@ class CertificatesController < ApplicationController
   def update
     Rails.logger.debug "Updating certificate #{@certificate.id} with params: #{certificate_params.inspect}"
 
-    if @certificate.update(certificate_params.except(:skill_ids))
-      # Update skills after certificate is updated
-      skill_ids = certificate_params[:skill_ids] || []
-      @certificate.skill_ids = skill_ids
+    # Assign attributes and skills BEFORE save so validation can see them
+    skill_ids = certificate_params[:skill_ids] || []
+    @certificate.assign_attributes(certificate_params.except(:skill_ids))
+    @certificate.skill_ids = skill_ids
+
+    if @certificate.save
       Rails.logger.debug "Certificate updated successfully, redirecting to dashboard"
-      redirect_to user_dashboard_path(@certificate.user), notice: "Certificate was successfully updated."
+      redirect_to dashboard_path, notice: "Certificate was successfully updated."
     else
       @user = @certificate.user
       # Get user from URL parameter for now (will change with authentication)
       user_id = params[:user_id] || @certificate.user_id
       @user_issuers = User.find(user_id).created_issuers
       @user_skills = User.find(user_id).created_skills
-      # Preserve skill selection for form re-render
-      @certificate.skill_ids = certificate_params[:skill_ids] || []
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    user_id = @certificate.user_id
     @certificate.destroy
-    redirect_to user_dashboard_path(user_id), notice: "Certificate was successfully deleted."
+    redirect_to dashboard_path, notice: "Certificate was successfully deleted."
   end
 
   private
@@ -88,7 +86,7 @@ class CertificatesController < ApplicationController
   end
 
   def check_ownership
-    current_user_id = params[:user_id] || params[:id]
+    current_user_id = current_user&.id
     unless current_user_id && current_user_id.to_i == @certificate.user_id
       redirect_to certificate_path(@certificate), alert: "You can only edit or delete your own certificates."
     end

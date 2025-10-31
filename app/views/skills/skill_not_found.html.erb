@@ -1,0 +1,20 @@
+<h1 class="text-primary text-center mb-4">Skill Not Found</h1>
+
+<p class="text-center">
+  <% if defined?(@skill_id) && @skill_id.present? %>
+    The skill with ID <strong><%= @skill_id %></strong> doesn't exist or you don't have access.
+  <% else %>
+    The requested skill doesn't exist or you don't have access.
+  <% end %>
+  </p>
+<p class="text-center mb-4">Please check the URL or try a different skill.</p>
+
+<p class="text-center">
+  <% if session[:user_id] %>
+    <%= link_to "Go to Skills", skills_path, class: "btn btn-primary" %>
+  <% else %>
+    <%= link_to "Go Home", root_path, class: "btn btn-primary" %>
+  <% end %>
+</p>
+
+

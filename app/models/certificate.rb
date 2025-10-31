@@ -7,6 +7,7 @@ class Certificate < ApplicationRecord
 
   validate :certificate_name_presence
   validate :issued_on_presence
+  validate :has_at_least_one_skill
   validates :verification_url, format: { with: URI::DEFAULT_PARSER.make_regexp(%w[http https]), allow_blank: true }
 
   private
@@ -20,6 +21,12 @@ class Certificate < ApplicationRecord
   def issued_on_presence
     if issued_on.blank?
       errors.add(:base, "Issue date can't be blank")
+    end
+  end
+
+  def has_at_least_one_skill
+    if skill_ids.blank? || skill_ids.reject(&:blank?).empty?
+      errors.add(:base, "Certificate must have at least one skill")
     end
   end
 end

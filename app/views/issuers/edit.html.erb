@@ -2,7 +2,7 @@
 
 <div class="row justify-content-center">
   <div class="col-md-8 col-lg-6">
-    <%= form_with model: @issuer, url: user_issuer_path(@issuer.created_by, @issuer), method: :patch, local: true do |form| %>
+    <%= form_with model: @issuer, url: issuer_path(@issuer), method: :patch, local: true do |form| %>
   <% if @issuer.errors.any? %>
     <div class="text-danger mb-3">
       <h6 class="text-danger"><%= pluralize(@issuer.errors.count, "error") %> prohibited this issuer from being saved:</h6>
@@ -35,7 +35,7 @@
   </div>
 
   <div class="mb-3 d-flex justify-content-center">
-    <%= link_to "Cancel", user_issuers_path(@issuer.created_by), class: "btn btn-outline-secondary me-4" %>
+    <%= link_to "Cancel", issuers_path, class: "btn btn-outline-secondary me-4" %>
     <%= form.submit "Update Issuer", class: "btn btn-primary" %>
   </div>
   <% end %>
