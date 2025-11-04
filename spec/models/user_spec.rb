@@ -41,12 +41,13 @@ RSpec.describe User, type: :model do
       let(:sql) { Skill.create!(name: 'SQL', created_by: user.id) }
 
       before do
-        cert1 = Certificate.create!(name: 'Ruby Cert', issued_on: '2024-01-15', user: user, issuer: issuer)
-        cert2 = Certificate.create!(name: 'SQL Cert', issued_on: '2024-01-15', user: user, issuer: issuer)
-
-        CertificateSkill.create!(certificate: cert1, skill: ruby)
-        CertificateSkill.create!(certificate: cert2, skill: sql)
-        CertificateSkill.create!(certificate: cert2, skill: ruby) # duplicate Ruby
+        cert1 = Certificate.new(name: 'Ruby Cert', issued_on: '2024-01-15', user: user, issuer: issuer)
+        cert1.skills << ruby
+        cert1.save!
+        cert2 = Certificate.new(name: 'SQL Cert', issued_on: '2024-01-15', user: user, issuer: issuer)
+        cert2.skills << sql
+        cert2.skills << ruby
+        cert2.save!
       end
 
       it 'returns all unique skills associated with the user' do
@@ -73,8 +74,9 @@ RSpec.describe User, type: :model do
       let(:sql) { Skill.create!(name: 'SQL', created_by: user.id) }
 
       before do
-        cert = Certificate.create!(name: 'SQL Cert', issued_on: '2024-01-15', user: user, issuer: issuer)
-        CertificateSkill.create!(certificate: cert, skill: sql)
+        cert = Certificate.new(name: 'SQL Cert', issued_on: '2024-01-15', user: user, issuer: issuer)
+        cert.skills << sql
+        cert.save!
       end
 
       it 'returns an empty array for unmatched skill' do
@@ -86,12 +88,15 @@ RSpec.describe User, type: :model do
       let(:issuer) { Issuer.create!(name: 'SkillCert Inc.', created_by: user.id) }
       let(:ruby) { Skill.create!(name: 'Ruby', created_by: user.id) }
 
-      let!(:cert1) { Certificate.create!(name: 'Ruby Cert 1', issued_on: '2024-01-15', user: user, issuer: issuer) }
-      let!(:cert2) { Certificate.create!(name: 'Ruby Cert 2', issued_on: '2024-01-15', user: user, issuer: issuer) }
+      let!(:cert1) do
+        Certificate.new(name: 'Ruby Cert 1', issued_on: '2024-01-15', user: user, issuer: issuer).tap { |c| c.skills << ruby; c.save! }
+      end
+      let!(:cert2) do
+        Certificate.new(name: 'Ruby Cert 2', issued_on: '2024-01-15', user: user, issuer: issuer).tap { |c| c.skills << ruby; c.save! }
+      end
 
       before do
-        CertificateSkill.create!(certificate: cert1, skill: ruby)
-        CertificateSkill.create!(certificate: cert2, skill: ruby)
+        # skills already attached during creation
       end
 
       it 'returns all certificates that include the given skill' do

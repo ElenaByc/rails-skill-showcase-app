@@ -1,24 +1,116 @@
-<h1><%= @user.name %>'s Skill Showcase</h1>
+<style>
+  .certificate-card-link {
+    display: block;
+  }
+  .certificate-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    cursor: pointer;
+  }
+  .certificate-card-link:hover .certificate-card {
+    transform: scale(1.02);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  }
+  .certificate-card-link:hover {
+    text-decoration: none;
+  }
+  .filter-skill-btn.active {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: white;
+  }
+  .certificate-item.hidden {
+    display: none;
+  }
+</style>
 
-<h2>Certificates</h2>
+<h1 class="text-primary text-center mb-4"><%= @user.name %>'s Skill Showcase</h1>
 
-<p style="max-width: 600px;">
-  In the future, this page will include a clickable skill cloud. Recruiters will be able to filter certificates and projects by specific skills — for example, clicking “React” will instantly show all certificates and projects where React was used. This will make it easier to explore a user's strengths and learning journey.
-</p>
-
-<div style="margin-bottom: 1em;">
-  <% @skills.each do |skill| %>
-    <span style="margin-left: 10px;"><%= skill.name %></span>
+<% if @certificates.any? %>
+  <% if @skills.any? %>
+    <div class="mb-4 text-center">
+      <p class="mb-2 text-muted">Filter by skill:</p>
+      <div class="d-flex flex-wrap gap-2 justify-content-center">
+        <button type="button" class="btn btn-outline-primary btn-sm filter-skill-btn active" data-skill="all">
+          All
+        </button>
+        <% @skills.each do |skill| %>
+          <button type="button" class="btn btn-outline-primary btn-sm filter-skill-btn" data-skill="<%= skill.name %>">
+            <%= skill.name %>
+          </button>
+        <% end %>
+      </div>
+    </div>
   <% end %>
-</div>
 
+  <div class="row justify-content-center" id="certificatesContainer">
+    <% @certificates.each do |certificate| %>
+      <div class="col-12 col-md-6 col-lg-5 col-xl-4 mb-4 certificate-item" data-skills="<%= certificate.skills.map(&:name).join(',') %>">
+        <%= link_to certificate_path(certificate), class: "text-decoration-none text-dark certificate-card-link" do %>
+          <div class="card h-100 shadow-sm certificate-card">
+            <div class="card-body p-2 d-flex flex-column">
+              <% if certificate.image_url.present? %>
+                <div class="text-center mb-3" style="width: 100%; aspect-ratio: 11 / 8.5; display: flex; align-items: center; justify-content: center;">
+                  <%= image_tag certificate.image_url, alt: certificate.name, class: "img-fluid", style: "max-height: 100%; max-width: 100%; object-fit: contain;" %>
+                </div>
+              <% else %>
+                <div class="text-center mb-3 d-flex align-items-center justify-content-center bg-light border rounded" style="width: 100%; aspect-ratio: 11 / 8.5;">
+                  <small class="text-muted">NO IMAGE<br>AVAILABLE</small>
+                </div>
+              <% end %>
+              
+              <h6 class="card-title mb-2 text-primary text-center" style="font-size: 1.1rem; line-height: 1.3;">
+                <strong><%= certificate.name %></strong>
+              </h6>
+              
+              <% if certificate.skills.any? %>
+                <div class="mb-2 d-flex flex-wrap gap-1 justify-content-center">
+                  <% certificate.skills.each do |skill| %>
+                    <span class="badge bg-primary" style="font-size: 0.8rem;">
+                      <%= skill.name %>
+                    </span>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
 
-<ul>
-  <% @certificates.each do |certificate| %>
-    <li>
-      <strong><%= certificate.name %></strong>
-      (<%= certificate.issued_on %>) from <%= certificate.issuer.name %><br>
-      <em>Skills:</em> <%= certificate.skills.map(&:name).join(", ") %>
-    </li>
-  <% end %>
-</ul>
+  <script>
+    (function() {
+      const filterButtons = document.querySelectorAll('.filter-skill-btn');
+      const certificateItems = document.querySelectorAll('.certificate-item');
+
+      filterButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          const selectedSkill = this.getAttribute('data-skill');
+
+          // Update active button
+          filterButtons.forEach(function(b) {
+            b.classList.remove('active');
+          });
+          this.classList.add('active');
+
+          // Filter certificates
+          certificateItems.forEach(function(item) {
+            const skills = item.getAttribute('data-skills').split(',');
+            if (selectedSkill === 'all' || skills.includes(selectedSkill)) {
+              item.classList.remove('hidden');
+            } else {
+              item.classList.add('hidden');
+            }
+          });
+        });
+      });
+    })();
+  </script>
+<% else %>
+  <div class="card mb-4">
+    <div class="card-body text-center">
+      <h5 class="mb-2">No certificates yet</h5>
+      <p class="mb-0 text-muted">This user hasn't added any certificates to their showcase.</p>
+    </div>
+  </div>
+<% end %>

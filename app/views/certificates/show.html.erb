@@ -1,19 +1,25 @@
 <style>
   .certificate-image {
-    width: 300px;
-    height: 210px;
+    width: 500px;
+    height: 350px;
   }
   @media (min-width: 992px) {
     .certificate-image {
-      width: 400px;
-      height: 280px;
+      width: 700px;
+      height: 490px;
     }
   }
   @media (min-width: 1200px) {
     .certificate-image {
-      width: 500px;
-      height: 350px;
+      width: 800px;
+      height: 560px;
     }
+  }
+  .verify-link {
+    transition: color 0.2s ease-in-out;
+  }
+  .verify-link:hover {
+    color: var(--bs-primary) !important;
   }
 </style>
 
@@ -22,13 +28,17 @@
 <div class="card mb-4">
   <div class="card-body d-flex flex-column flex-md-row">
     <div class="me-md-4 mb-3 mb-md-0" style="flex-shrink: 0;">
-      <div class="border border-secondary rounded d-flex align-items-center justify-content-center bg-light mx-auto certificate-image">
-        <small class="text-muted text-center">NO IMAGE<br>AVAILABLE</small>
-      </div>
+      <% if @certificate.image_url.present? %>
+        <%= image_tag @certificate.image_url, alt: @certificate.name, class: "img-fluid certificate-image", style: "object-fit: contain;" %>
+      <% else %>
+        <div class="border border-secondary rounded d-flex align-items-center justify-content-center bg-light mx-auto certificate-image">
+          <small class="text-muted text-center">NO IMAGE<br>AVAILABLE</small>
+        </div>
+      <% end %>
     </div>
     
     <div class="flex-grow-1 ms-4">
-      <h5 class="card-title mb-3">Certificate Details</h5>
+      <h4 class="card-title mb-3 fw-bold">Certificate Details</h4>
       
         <div>
           <p><strong>Issued To:</strong> <%= @certificate.user.name %></p>
@@ -49,11 +59,18 @@
 
         <% if @certificate.verification_url.present? %>
           <div class="mt-5">
-            <%= link_to "Verify Certificate", @certificate.verification_url, target: "_blank", rel: "noopener noreferrer", class: "btn btn-outline-secondary btn-sm" %>
+            <%= link_to "Verify certificate", @certificate.verification_url, target: "_blank", rel: "noopener noreferrer", class: "text-muted text-decoration-none verify-link" %>
           </div>
         <% end %>
     </div>
   </div>
 </div>
+
+<%# If user is not logged in, offer a quick way back to the owner's public showcase %>
+<% if session[:user_id].blank? %>
+  <div class="text-center mt-3">
+    <%= link_to "Back to #{h(@certificate.user.name)}'s Showcase", user_showcase_path(@certificate.user), class: "btn btn-outline-primary" %>
+  </div>
+<% end %>
 
 <%# Navigation buttons - will be implemented properly with authentication system %>

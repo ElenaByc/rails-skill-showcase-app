@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe Certificate, type: :model do
   let(:user) { User.create!(name: 'Test User', email: 'test@example.com', password: 'password') }
   let(:issuer) { Issuer.create!(name: 'Test Issuer', created_by: user.id) }
+  let(:skill)  { Skill.create!(name: 'Ruby', created_by: user.id) }
 
   describe 'validations' do
     it 'is invalid without a name' do
@@ -25,17 +26,18 @@ RSpec.describe Certificate, type: :model do
       expect(certificate.errors[:base]).to include("Issue date can't be blank")
     end
 
-    it 'is valid with valid attributes' do
+    it 'is valid with valid attributes (and at least one skill)' do
       certificate = Certificate.new(
         name: 'Test Certificate',
         issued_on: '2024-01-15',
         user: user,
         issuer: issuer
       )
+      certificate.skills << skill
       expect(certificate).to be_valid
     end
 
-    it 'is valid with a valid verification URL' do
+    it 'is valid with a valid verification URL (and at least one skill)' do
       certificate = Certificate.new(
         name: 'Test Certificate',
         issued_on: '2024-01-15',
@@ -43,6 +45,7 @@ RSpec.describe Certificate, type: :model do
         user: user,
         issuer: issuer
       )
+      certificate.skills << skill
       expect(certificate).to be_valid
     end
 
@@ -58,7 +61,7 @@ RSpec.describe Certificate, type: :model do
       expect(certificate.errors[:verification_url]).to include('is invalid')
     end
 
-    it 'is valid with blank verification URL' do
+    it 'is valid with blank verification URL (and at least one skill)' do
       certificate = Certificate.new(
         name: 'Test Certificate',
         issued_on: '2024-01-15',
@@ -66,10 +69,11 @@ RSpec.describe Certificate, type: :model do
         user: user,
         issuer: issuer
       )
+      certificate.skills << skill
       expect(certificate).to be_valid
     end
 
-    it 'is valid with nil verification URL' do
+    it 'is valid with nil verification URL (and at least one skill)' do
       certificate = Certificate.new(
         name: 'Test Certificate',
         issued_on: '2024-01-15',
@@ -77,18 +81,19 @@ RSpec.describe Certificate, type: :model do
         user: user,
         issuer: issuer
       )
+      certificate.skills << skill
       expect(certificate).to be_valid
     end
   end
 
   describe 'associations' do
     let(:certificate) do
-      Certificate.create!(
+      Certificate.new(
         name: 'Test Certificate',
         issued_on: '2024-01-15',
         user: user,
         issuer: issuer
-      )
+      ).tap { |c| c.skills << skill; c.save! }
     end
 
     it 'belongs to a user' do
@@ -99,43 +104,43 @@ RSpec.describe Certificate, type: :model do
       expect(certificate.issuer).to eq(issuer)
     end
 
-    it 'has many certificate_skills' do
-      expect(certificate.certificate_skills).to be_empty
+    it 'has many certificate_skills (at least one due to validation)' do
+      expect(certificate.certificate_skills.count).to be >= 1
     end
 
-    it 'has many skills through certificate_skills' do
-      expect(certificate.skills).to be_empty
+    it 'has many skills through certificate_skills (at least one due to validation)' do
+      expect(certificate.skills.count).to be >= 1
     end
 
     it 'can have skills assigned' do
-      skill = Skill.create!(name: 'Ruby', created_by: user.id)
-      certificate.skills << skill
-      expect(certificate.skills).to include(skill)
+      extra_skill = Skill.create!(name: 'Rails', created_by: user.id)
+      certificate.skills << extra_skill
+      expect(certificate.skills).to include(extra_skill)
     end
 
     it 'destroys associated certificate_skills when destroyed' do
-      skill = Skill.create!(name: 'Ruby', created_by: user.id)
+      skill = Skill.create!(name: 'Elixir', created_by: user.id)
       certificate.skills << skill
-      certificate_skill = certificate.certificate_skills.first
+      num_links = certificate.certificate_skills.count
 
       expect {
         certificate.destroy
-      }.to change { CertificateSkill.count }.by(-1)
+      }.to change { CertificateSkill.count }.by(-num_links)
     end
   end
 
   describe 'skill assignment' do
     let(:certificate) do
-      Certificate.create!(
+      Certificate.new(
         name: 'Test Certificate',
         issued_on: '2024-01-15',
         user: user,
         issuer: issuer
-      )
+      ).tap { |c| c.skills << skill; c.save! }
     end
 
-    let(:skill1) { Skill.create!(name: 'Ruby', created_by: user.id) }
-    let(:skill2) { Skill.create!(name: 'Rails', created_by: user.id) }
+    let(:skill1) { Skill.create!(name: 'Go', created_by: user.id) }
+    let(:skill2) { Skill.create!(name: 'Rust', created_by: user.id) }
 
     it 'can assign multiple skills' do
       certificate.skills = [ skill1, skill2 ]
@@ -148,7 +153,7 @@ RSpec.describe Certificate, type: :model do
       expect(certificate.skills).to contain_exactly(skill2)
     end
 
-    it 'can clear all skills' do
+    it 'can clear all skills (not persisted due to validation)' do
       certificate.skills = [ skill1, skill2 ]
       certificate.skills = []
       expect(certificate.skills).to be_empty
