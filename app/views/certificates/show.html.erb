@@ -66,4 +66,11 @@
   </div>
 </div>
 
+<%# If user is not logged in, offer a quick way back to the owner's public showcase %>
+<% if session[:user_id].blank? %>
+  <div class="text-center mt-3">
+    <%= link_to "Back to #{h(@certificate.user.name)}'s Showcase", user_showcase_path(@certificate.user), class: "btn btn-outline-primary" %>
+  </div>
+<% end %>
+
 <%# Navigation buttons - will be implemented properly with authentication system %>
