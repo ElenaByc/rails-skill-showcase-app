@@ -13,14 +13,38 @@
   .certificate-card-link:hover {
     text-decoration: none;
   }
+  .filter-skill-btn.active {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: white;
+  }
+  .certificate-item.hidden {
+    display: none;
+  }
 </style>
 
 <h1 class="text-primary text-center mb-4"><%= @user.name %>'s Skill Showcase</h1>
 
 <% if @certificates.any? %>
-  <div class="row justify-content-center">
+  <% if @skills.any? %>
+    <div class="mb-4 text-center">
+      <p class="mb-2 text-muted">Filter by skill:</p>
+      <div class="d-flex flex-wrap gap-2 justify-content-center">
+        <button type="button" class="btn btn-outline-primary btn-sm filter-skill-btn active" data-skill="all">
+          All
+        </button>
+        <% @skills.each do |skill| %>
+          <button type="button" class="btn btn-outline-primary btn-sm filter-skill-btn" data-skill="<%= skill.name %>">
+            <%= skill.name %>
+          </button>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="row justify-content-center" id="certificatesContainer">
     <% @certificates.each do |certificate| %>
-      <div class="col-12 col-md-6 col-lg-5 col-xl-4 mb-4">
+      <div class="col-12 col-md-6 col-lg-5 col-xl-4 mb-4 certificate-item" data-skills="<%= certificate.skills.map(&:name).join(',') %>">
         <%= link_to certificate_path(certificate), class: "text-decoration-none text-dark certificate-card-link" do %>
           <div class="card h-100 shadow-sm certificate-card">
             <div class="card-body p-2 d-flex flex-column">
@@ -53,6 +77,35 @@
       </div>
     <% end %>
   </div>
+
+  <script>
+    (function() {
+      const filterButtons = document.querySelectorAll('.filter-skill-btn');
+      const certificateItems = document.querySelectorAll('.certificate-item');
+
+      filterButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          const selectedSkill = this.getAttribute('data-skill');
+
+          // Update active button
+          filterButtons.forEach(function(b) {
+            b.classList.remove('active');
+          });
+          this.classList.add('active');
+
+          // Filter certificates
+          certificateItems.forEach(function(item) {
+            const skills = item.getAttribute('data-skills').split(',');
+            if (selectedSkill === 'all' || skills.includes(selectedSkill)) {
+              item.classList.remove('hidden');
+            } else {
+              item.classList.add('hidden');
+            }
+          });
+        });
+      });
+    })();
+  </script>
 <% else %>
   <div class="card mb-4">
     <div class="card-body text-center">
