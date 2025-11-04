@@ -59,30 +59,34 @@
       </div>
 
       <script>
-        const searchInput = document.getElementById('skillSearch');
-        const clearBtn = document.getElementById('clearSearch');
-        const skillItems = document.querySelectorAll('.skill-item');
+        (function() {
+          const searchInput = document.getElementById('skillSearch');
+          const clearBtn = document.getElementById('clearSearch');
+          const skillItems = document.querySelectorAll('.skill-item');
 
-        function filterSkills() {
-          const searchTerm = searchInput.value.toLowerCase();
+          if (!searchInput || !clearBtn) return;
+
+          function filterSkills() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            skillItems.forEach(function(item) {
+              const skillName = item.querySelector('label').textContent.toLowerCase();
+              if (skillName.includes(searchTerm)) {
+                item.style.display = 'block';
+              } else {
+                item.style.display = 'none';
+              }
+            });
+          }
+
+          searchInput.addEventListener('input', filterSkills);
           
-          skillItems.forEach(function(item) {
-            const skillName = item.querySelector('label').textContent.toLowerCase();
-            if (skillName.includes(searchTerm)) {
-              item.style.display = 'block';
-            } else {
-              item.style.display = 'none';
-            }
+          clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            filterSkills();
+            searchInput.focus();
           });
-        }
-
-        searchInput.addEventListener('input', filterSkills);
-        
-        clearBtn.addEventListener('click', function() {
-          searchInput.value = '';
-          filterSkills();
-          searchInput.focus();
-        });
+        })();
       </script>
 
       <div class="mb-3">
@@ -90,6 +94,98 @@
         <%= form.url_field :verification_url, class: "form-control", autocomplete: "off" %>
         <small class="form-text text-muted">Optional: Link to verify this certificate online</small>
       </div>
+
+      <div class="mb-3">
+        <%= form.label :image_url, "Certificate Image", class: "form-label" %>
+        <%= form.hidden_field :image_url, id: "certificate_image_url", value: @certificate.image_url %>
+        <div id="imagePreview" class="mb-2"></div>
+        <button type="button" class="btn btn-outline-secondary" id="uploadImageBtn">
+          <i class="bi bi-cloud-upload"></i> Upload Image
+        </button>
+        <small class="form-text text-muted d-block mt-1">Optional: Upload an image of your certificate</small>
+      </div>
+
+      <script>
+        (function() {
+          function initCloudinaryUpload() {
+            const uploadBtn = document.getElementById('uploadImageBtn');
+            const imageUrlInput = document.getElementById('certificate_image_url');
+            const imagePreview = document.getElementById('imagePreview');
+            
+            if (!uploadBtn || !imageUrlInput) return;
+            
+            // Remove quotes if they exist (dotenv might include them)
+            let cloudName = '<%= ENV["CLOUDINARY_CLOUD_NAME"] || "" %>'.replace(/^["']|["']$/g, '');
+            let uploadPreset = '<%= ENV["CLOUDINARY_UPLOAD_PRESET"] || "" %>'.replace(/^["']|["']$/g, '');
+
+            // Debug: log values to console
+            console.log('Cloudinary cloudName:', cloudName);
+            console.log('Cloudinary uploadPreset:', uploadPreset);
+            console.log('Cloudinary object available:', typeof cloudinary !== 'undefined');
+
+            if (!cloudName) {
+              console.error('Cloudinary cloud name is not set! Check your .env file and restart the server.');
+              uploadBtn.disabled = true;
+              uploadBtn.textContent = 'Upload Image (Config Missing)';
+              return;
+            }
+
+            if (typeof cloudinary === 'undefined') {
+              console.error('Cloudinary widget script not loaded!');
+              uploadBtn.disabled = true;
+              uploadBtn.textContent = 'Upload Image (Script Error)';
+              return;
+            }
+
+            // Remove any existing listeners by cloning the button
+            const newUploadBtn = uploadBtn.cloneNode(true);
+            uploadBtn.parentNode.replaceChild(newUploadBtn, uploadBtn);
+
+            newUploadBtn.addEventListener('click', function(e) {
+              e.preventDefault();
+              console.log('Upload button clicked');
+              
+              try {
+                cloudinary.openUploadWidget(
+                  {
+                    cloudName: cloudName,
+                    uploadPreset: uploadPreset,
+                    sources: ['local', 'camera'],
+                    multiple: false,
+                    maxFileSize: 5000000, // 5MB
+                    clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif', 'webp']
+                  },
+                  function(error, result) {
+                    console.log('Upload callback:', error, result);
+                    if (error) {
+                      console.error('Upload error:', error);
+                      alert('Upload failed: ' + (error.message || 'Unknown error'));
+                    }
+                    if (!error && result && result.event === 'success') {
+                      imageUrlInput.value = result.info.secure_url;
+                      imagePreview.innerHTML = '<img src="' + result.info.secure_url + '" class="img-thumbnail" style="max-width: 300px; max-height: 300px;" alt="Certificate preview">';
+                    }
+                  }
+                );
+              } catch (err) {
+                console.error('Error opening upload widget:', err);
+                alert('Error opening upload dialog: ' + err.message);
+              }
+            });
+
+            // Show preview if image_url already exists (for edit forms)
+            if (imageUrlInput.value) {
+              imagePreview.innerHTML = '<img src="' + imageUrlInput.value + '" class="img-thumbnail" style="max-width: 300px; max-height: 300px;" alt="Certificate preview">';
+            }
+          }
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCloudinaryUpload);
+          } else {
+            initCloudinaryUpload();
+          }
+        })();
+      </script>
 
       <div class="mb-3 d-flex justify-content-center">
         <%= link_to "Cancel", dashboard_path, class: "btn btn-outline-secondary me-4" %>

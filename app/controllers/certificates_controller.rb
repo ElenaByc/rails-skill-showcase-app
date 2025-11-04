@@ -93,7 +93,7 @@ class CertificatesController < ApplicationController
   end
 
   def certificate_params
-    permitted = params.require(:certificate).permit(:name, :issued_on, :verification_url, :issuer_id, skill_ids: [])
+    permitted = params.require(:certificate).permit(:name, :issued_on, :verification_url, :issuer_id, :image_url, skill_ids: [])
     # Filter out empty skill_ids and convert to integers
     if permitted[:skill_ids]
       permitted[:skill_ids] = permitted[:skill_ids].reject(&:blank?).map(&:to_i)
